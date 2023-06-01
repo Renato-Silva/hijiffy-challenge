@@ -20,7 +20,7 @@ class QuestionsController extends Controller
             'chat' => 'string|nullable'
         ]);
 
-        $response = $this->service->query($request->user(), $validated['question'], $validated['chat']);
+        $response = $this->service->query($request->user(), $validated['question'], $validated['chat'] ?? null);
 
         return [
             'message' => $response['text'],

@@ -19,3 +19,9 @@
 	> npm run dev
 	
 - Access the chat UI here: [http://localhost:5173](http://localhost:5173)
+
+### Other
+- Run tests
+	> vendor/bin/sail php artisan test
+- On the project root there's a Postman collection with the API endpoints
+	> Hijiffy.postman_collection.json
