@@ -2,27 +2,39 @@
 
 namespace Tests\Unit;
 
-use Mockery;
+use App\Models\User;
+use App\Services\DialogFlowService;
 use Tests\TestCase;
 
 class CorrectDataTest extends TestCase
 {
     public function testAskValidQuestion(): void
     {
-        $mockedResponse = 'This is the response from Dialogflow.';
-        $dialogFlowService = Mockery::mock(DialogFlowService::class);
-        $dialogFlowService->shouldReceive('query')->andReturn($mockedResponse);
-        $this->app->instance(DialogFlowService::class, $dialogFlowService);
+        $user = User::first();
 
-        $validQuestion = 'What time is it?';
+        $mockSessionClient = $this->getMockBuilder(DialogFlowService::class)
+            ->getMock();
 
-        $response = $this->postJson('/api/ask', [
-            'question' => $validQuestion,
+        $mockSessionClient->method('query')->willReturn([
+            'text' => 'It is raining.',
+            'session' => '123456'
         ]);
 
-        $response->assertStatus(200)
-            ->assertExactJson([
-                'message' => $mockedResponse,
-            ]);
+        // Inject the mocked session client into the service container
+        $this->app->instance(DialogFlowService::class, $mockSessionClient);
+
+        // Make a request to the API endpoint
+        $response = $this->actingAs($user)->postJson('/api/ask', [
+            'question' => 'What is the weather like?'
+        ]);
+
+        // Assert the response status code
+        $response->assertStatus(200);
+
+        // Assert the response contains the expected data
+        $response->assertJson([
+            'message' => 'It is raining.',
+            'chat' => '123456'
+        ]);
     }
 }
