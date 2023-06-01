@@ -5,6 +5,7 @@
 - Place the dialogflow_credentials.json inside the /storage/dialogflow folder
 - Copy .env.copy to .env and fill the following variables 
 	> DIALOGFLOW_PROJECT_ID=hijiffy-123456
+    
     > DIALOGFLOW_KEY_FILE=hijiffy-123456-AAAAAAAAA.json
 - Install dependencies
 	> composer install
