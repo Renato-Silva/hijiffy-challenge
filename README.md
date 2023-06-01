@@ -16,7 +16,7 @@
 	
 	If you have trouble with permissions run on your host machine
 	> sudo chmod o+w ./storage/ -R
-    
+
 	> sudo chmod o+w ./bootstrap/ -R
 	
 	Credentials for the test user are: 
@@ -24,6 +24,7 @@
 		- **password**
 - On the frontend repository just run
 	> npm install
+    
 	> npm run dev
 	
 - Access the chat UI here: [http://localhost:5173](http://localhost:5173)
