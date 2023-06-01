@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\DialogflowAuthFileNotFoundException;
 use App\Models\Session;
 use App\Models\User;
-use Exception;
 use Google\Cloud\Dialogflow\V2\QueryInput;
 use Google\Cloud\Dialogflow\V2\SessionsClient;
 use Google\Cloud\Dialogflow\V2\TextInput;
@@ -20,7 +20,7 @@ class DialogFlowService
 
         // Check if file exists
         if (!File::exists($filePath)) {
-            throw new Exception('Dialogflow auth file not found.');
+            throw new DialogflowAuthFileNotFoundException();
         }
 
         $this->sessionsClient = new SessionsClient([
@@ -30,8 +30,10 @@ class DialogFlowService
 
     public function query(User $user, string $question, ?string $sessionId = null): array {
 
+        // Find the current chat
         $sessionModel = Session::where('session', $sessionId)->first();
 
+        // If there isn't a chat then create one
         if (!$sessionModel) {
             $sessionModel = Session::create([
                 'session' => uniqid(),
