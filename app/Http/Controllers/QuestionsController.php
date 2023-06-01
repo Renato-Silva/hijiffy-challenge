@@ -16,11 +16,15 @@ class QuestionsController extends Controller
 
     public function ask(Request $request) {
         $validated = $request->validate([
-            'question' => 'string|required'
+            'question' => 'string|required',
+            'chat' => 'string|nullable'
         ]);
 
+        $response = $this->service->query($request->user(), $validated['question'], $validated['chat']);
+
         return [
-            'message' => $this->service->query($validated['question'])
+            'message' => $response['text'],
+            'chat' => $response['session']
         ];
     }
 }

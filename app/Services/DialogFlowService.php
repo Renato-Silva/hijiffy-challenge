@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Session;
+use App\Models\User;
 use Exception;
 use Google\Cloud\Dialogflow\V2\QueryInput;
 use Google\Cloud\Dialogflow\V2\SessionsClient;
@@ -26,9 +28,18 @@ class DialogFlowService
         ]);
     }
 
-    public function query(string $question): string {
+    public function query(User $user, string $question, ?string $sessionId = null): array {
 
-        $session = $this->sessionsClient->sessionName(config('services.dialogflow.project_id'), uniqid());
+        $sessionModel = Session::where('session', $sessionId)->first();
+
+        if (!$sessionModel) {
+            $sessionModel = Session::create([
+                'session' => uniqid(),
+                'user_id' => $user->id
+            ]);
+        }
+
+        $session = $this->sessionsClient->sessionName(config('services.dialogflow.project_id'), $sessionModel->session);
 
         $textInput = new TextInput();
         $textInput->setText($question);
@@ -39,7 +50,10 @@ class DialogFlowService
 
         $response = $this->sessionsClient->detectIntent($session, $queryInput);
 
-        return $response->getQueryResult()->getFulfillmentText();
+        return [
+            'text' => $response->getQueryResult()->getFulfillmentText(),
+            'session' => $sessionModel->session
+        ];
     }
 
     public function __destruct() {
